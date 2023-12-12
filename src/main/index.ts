@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -67,5 +67,36 @@ app.on('window-all-closed', () => {
   }
 })
 
+ipcMain.on('open', (event, path) => {
+  const { exec } = require('child_process')
+  exec(`"${path}"`, (error, stdout) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+    console.log(stdout)
+  })
+})
+ipcMain.on('getImage', (event, JSONData) => {
+  console.log(JSONData)
+  const data = JSON.parse(JSONData)
+  const { name, path } = data
+  let filePath
+  if (path.includes('.lnk')) {
+    filePath = shell.readShortcutLink(path).target
+  } else {
+    filePath = path
+  }
+  app.getFileIcon(filePath).then((res) => {
+    event.sender.send(
+      'getImage',
+      JSON.stringify({
+        name,
+        path,
+        img: res.toDataURL()
+      })
+    )
+  })
+})
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
