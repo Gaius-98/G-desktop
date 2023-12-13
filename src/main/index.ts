@@ -1,8 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, nativeImage } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-
+import fs from 'fs'
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -78,7 +78,6 @@ ipcMain.on('open', (event, path) => {
   })
 })
 ipcMain.on('getImage', (event, JSONData) => {
-  console.log(JSONData)
   const data = JSON.parse(JSONData)
   const { name, path } = data
   let filePath
@@ -87,13 +86,16 @@ ipcMain.on('getImage', (event, JSONData) => {
   } else {
     filePath = path
   }
+
   app.getFileIcon(filePath).then((res) => {
+    const imgPath = join(__dirname, `../../resources/${name}.png`)
+    fs.writeFileSync(imgPath, res.toPNG())
     event.sender.send(
       'getImage',
       JSON.stringify({
         name,
         path,
-        img: res.toDataURL()
+        img: imgPath
       })
     )
   })

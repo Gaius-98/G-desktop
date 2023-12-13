@@ -45,7 +45,7 @@ const GContent = (props: ContentProps): ReactNode => {
       {appList.map((e) => {
         return (
           <div key={e.name} onClick={() => open(e)} className="h-32">
-            <img src={e.img} key={e.name} className="h-2 w-10" />
+            <img src={e.img} key={e.name} />
             <span key={e.name}>{e.name}</span>
           </div>
         )
