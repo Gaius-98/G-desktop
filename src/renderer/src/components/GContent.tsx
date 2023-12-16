@@ -25,18 +25,17 @@ const GContent = (props: ContentProps): ReactNode => {
     }
   }
   window.electron.ipcRenderer.on('getImage', (event, data) => {
-    console.log(data)
     const newArr = cloneDeepWith(appList)
     newArr.push(JSON.parse(data))
     setAppList(newArr)
-    console.log(appList)
+    console.log(event)
   })
   const open = (e): void => {
     window.electron.ipcRenderer.send('open', e.path)
   }
   return (
     <div
-      className="p-1 h-28 bg-slate-500"
+      className="p-1 h-full  grid grid-cols-6 gap-y-2"
       onDragOver={(e) => {
         e.preventDefault()
       }}
@@ -44,9 +43,19 @@ const GContent = (props: ContentProps): ReactNode => {
     >
       {appList.map((e) => {
         return (
-          <div key={e.name} onClick={() => open(e)} className="h-32">
+          <div
+            key={e.name}
+            onClick={() => open(e)}
+            className="h-20 w-20 flex flex-col justify-around items-center  rounded-sm cursor-pointer p-1"
+          >
             <img src={e.img} key={e.name} />
-            <span key={e.name}>{e.name}</span>
+            <div
+              key={e.name}
+              className=" max-w-full text-ellipsis overflow-hidden whitespace-nowrap"
+              title={e.name}
+            >
+              {e.name}
+            </div>
           </div>
         )
       })}

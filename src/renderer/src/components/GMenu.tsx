@@ -6,7 +6,7 @@ interface MenuProps {
   setList: Dispatch<SetStateAction<MenuItemType[]>>
 }
 const GMenu = (props: MenuProps): ReactNode => {
-  const { list, setList } = props
+  const { list } = props
   return <Menu items={list}></Menu>
 }
 export default GMenu

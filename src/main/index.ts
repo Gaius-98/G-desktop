@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, nativeImage } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -13,7 +13,8 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      webSecurity: false
     }
   })
 
@@ -74,7 +75,7 @@ ipcMain.on('open', (event, path) => {
       console.error(error)
       return
     }
-    console.log(stdout)
+    console.log(stdout, event)
   })
 })
 ipcMain.on('getImage', (event, JSONData) => {
@@ -86,9 +87,11 @@ ipcMain.on('getImage', (event, JSONData) => {
   } else {
     filePath = path
   }
-
   app.getFileIcon(filePath).then((res) => {
-    const imgPath = join(__dirname, `../../resources/${name}.png`)
+    const imgPath = join(__dirname, `../../resources/${name}.png`).replace(
+      'app.asar',
+      'app.asar.unpacked'
+    )
     fs.writeFileSync(imgPath, res.toPNG())
     event.sender.send(
       'getImage',

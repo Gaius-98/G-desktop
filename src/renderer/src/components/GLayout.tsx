@@ -3,7 +3,7 @@ const { Header, Sider, Content } = Layout
 import GMenu from './GMenu'
 import { useState } from 'react'
 import { MenuItemType } from 'antd/es/menu/hooks/useItems'
-import GContent from './GContent'
+import GContent, { AppInfo } from './GContent'
 const GLayout = (): JSX.Element => {
   const [list, setList] = useState<MenuItemType[]>([{ key: 1, label: '测试1', title: '测试标题' }])
   const [appList, setAppList] = useState<AppInfo[]>([])
